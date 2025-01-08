@@ -1,4 +1,3 @@
-# app/test_main.py
 from unittest.mock import patch
 from app.main import cryptocurrency_action
 
