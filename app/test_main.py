@@ -2,54 +2,51 @@ from unittest.mock import patch
 from app.main import cryptocurrency_action
 
 
-def test_buy_more_cryptocurrency() -> None:
+@patch("app.main.get_exchange_rate_prediction")
+def test_buy_more_cryptocurrency(mock_get_exchange_rate_prediction: patch) -> None:
     """
-    Test case: predicted rate is > 5% higher than current rate.
+    Test case: predicted rate is more than 5% higher than the current rate.
+    Expected: "Buy more cryptocurrency".
     """
-    with patch("app.main.get_exchange_rate_prediction", return_value=110):
-        assert cryptocurrency_action(100) == "Buy more cryptocurrency", (
-            "Should suggest buying more cryptocurrency when predicted rate "
-            "is significantly higher."
-        )
+    mock_get_exchange_rate_prediction.return_value = 110
+    assert cryptocurrency_action(100) == "Buy more cryptocurrency"
 
 
-def test_sell_all_cryptocurrency() -> None:
+@patch("app.main.get_exchange_rate_prediction")
+def test_sell_all_cryptocurrency(mock_get_exchange_rate_prediction: patch) -> None:
     """
-    Test case: predicted rate is > 5% lower than current rate.
+    Test case: predicted rate is more than 5% lower than the current rate.
+    Expected: "Sell all your cryptocurrency".
     """
-    with patch("app.main.get_exchange_rate_prediction", return_value=90):
-        assert cryptocurrency_action(100) == "Sell all your cryptocurrency", (
-            "Should suggest selling cryptocurrency when predicted rate is "
-            "significantly lower."
-        )
+    mock_get_exchange_rate_prediction.return_value = 90
+    assert cryptocurrency_action(100) == "Sell all your cryptocurrency"
 
 
-def test_do_nothing() -> None:
+@patch("app.main.get_exchange_rate_prediction")
+def test_do_nothing(mock_get_exchange_rate_prediction: patch) -> None:
     """
     Test case: predicted rate is within 5% of the current rate.
+    Expected: "Do nothing".
     """
-    with patch("app.main.get_exchange_rate_prediction", return_value=102):
-        assert cryptocurrency_action(100) == "Do nothing", (
-            "Should suggest doing nothing when predicted rate is close to "
-            "the current rate."
-        )
+    mock_get_exchange_rate_prediction.return_value = 102
+    assert cryptocurrency_action(100) == "Do nothing"
 
 
-def test_boundary_5_percent_higher() -> None:
+@patch("app.main.get_exchange_rate_prediction")
+def test_boundary_5_percent_higher(mock_get_exchange_rate_prediction: patch) -> None:
     """
     Test case: predicted rate is exactly 5% higher than the current rate.
+    Expected: "Do nothing".
     """
-    with patch("app.main.get_exchange_rate_prediction", return_value=105):
-        assert cryptocurrency_action(100) == "Buy more cryptocurrency", (
-            "Should suggest buying when predicted rate is exactly 5% higher."
-        )
+    mock_get_exchange_rate_prediction.return_value = 105
+    assert cryptocurrency_action(100) == "Do nothing"
 
 
-def test_boundary_5_percent_lower() -> None:
+@patch("app.main.get_exchange_rate_prediction")
+def test_boundary_5_percent_lower(mock_get_exchange_rate_prediction: patch) -> None:
     """
     Test case: predicted rate is exactly 5% lower than the current rate.
+    Expected: "Do nothing".
     """
-    with patch("app.main.get_exchange_rate_prediction", return_value=95):
-        assert cryptocurrency_action(100) == "Sell all your cryptocurrency", (
-            "Should suggest selling when predicted rate is exactly 5% lower."
-        )
+    mock_get_exchange_rate_prediction.return_value = 95  # Exactly 5% lower
+    assert cryptocurrency_action(100) == "Do nothing"
